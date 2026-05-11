@@ -1,0 +1,271 @@
+<!-- 主编辑页 -->
+<view class="container">
+  <!-- 画布区域 -->
+  <view class="canvas-section">
+    <view class="canvas-wrapper">
+      <canvas
+        id="mainCanvas"
+        type="2d"
+        class="main-canvas"
+        style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"
+        bindtouchstart="onTouchStart"
+        bindtouchmove="onTouchMove"
+        bindtouchend="onTouchEnd"
+      />
+    </view>
+
+    <view class="canvas-actions">
+      <button class="btn btn-secondary" bindtap="chooseImage">
+        <text class="btn-text">选图</text>
+      </button>
+      <button class="btn btn-primary" bindtap="exportImage">
+        <text class="btn-text">导出</text>
+      </button>
+      <button class="btn btn-secondary" bindtap="resetCanvas">
+        <text class="btn-text">重置</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 工具栏 -->
+  <view class="toolbar">
+    <view class="tool-item {{currentTool === 'dot' ? 'active' : ''}}" bindtap="switchTool" data-tool="dot">
+      <text class="tool-label">波点</text>
+    </view>
+    <view class="tool-item {{currentTool === 'knit' ? 'active' : ''}}" bindtap="switchTool" data-tool="knit">
+      <text class="tool-label">针织</text>
+    </view>
+    <view class="tool-item {{currentTool === 'brush' ? 'active' : ''}}" bindtap="switchTool" data-tool="brush">
+      <text class="tool-label">画笔</text>
+    </view>
+    <view class="tool-item {{currentTool === 'background' ? 'active' : ''}}" bindtap="switchTool" data-tool="background">
+      <text class="tool-label">背景</text>
+    </view>
+  </view>
+
+  <!-- 控制面板 -->
+  <view class="control-panel">
+    <!-- 波点控制 -->
+    <view wx:if="{{currentTool === 'dot'}}" class="panel-content">
+      <!-- 拼接布局开关 -->
+      <view class="layout-toggle-row">
+        <view class="layout-toggle-info">
+          <text class="panel-title">拼接布局</text>
+          <text class="tip-text-inline">主图侧波点遮住原图，拓展侧波点显示被遮内容</text>
+        </view>
+        <switch checked="{{layoutConfig.enabled}}" bindchange="onLayoutToggle" color="#eae3d9" />
+      </view>
+
+      <view wx:if="{{layoutConfig.enabled}}" class="layout-options">
+        <view class="control-item full-width">
+          <text class="control-label">方向</text>
+          <picker mode="selector" range="{{layoutDirectionLabels}}" value="{{layoutConfig.directionIndex}}" bindchange="onLayoutDirectionChange">
+            <view class="picker-btn">{{layoutDirectionLabels[layoutConfig.directionIndex]}}</view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="divider"></view>
+
+      <view class="panel-header">
+        <text class="panel-title">波点设置</text>
+        <button class="btn btn-primary" bindtap="generateDots">生成</button>
+        <button wx:if="{{hasDots}}" class="btn btn-secondary" bindtap="shuffleDots">重排</button>
+        <button wx:if="{{hasDots}}" class="btn btn-secondary" bindtap="clearDots">清除</button>
+      </view>
+
+      <text class="tip-text">波点区域显示原图内容，其他区域显示背景</text>
+
+      <!-- 波点样式 -->
+      <view class="control-grid">
+        <view class="control-item">
+          <text class="control-label">形状</text>
+          <picker mode="selector" range="{{shapeLabels}}" value="{{dotConfig.shapeIndex}}" bindchange="onDotShapeChange">
+            <view class="picker-btn">{{shapeLabels[dotConfig.shapeIndex]}}</view>
+          </picker>
+        </view>
+        <view class="control-item">
+          <text class="control-label">分布</text>
+          <picker mode="selector" range="{{distributionLabels}}" value="{{dotConfig.distributionIndex}}" bindchange="onDotDistributionChange">
+            <view class="picker-btn">{{distributionLabels[dotConfig.distributionIndex]}}</view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="slider-group">
+        <view class="slider-item">
+          <view class="slider-header">
+            <text class="slider-label">密度</text>
+            <text class="slider-hint">稀疏 → 密集</text>
+          </view>
+          <slider min="1" max="10" step="1" value="{{dotConfig.density}}" bindchanging="onDotDensityChange" activeColor="#eae3d9" backgroundColor="#27272a" />
+        </view>
+        <view class="slider-item">
+          <text class="slider-label">大小: {{dotConfig.size}}</text>
+          <slider min="5" max="50" value="{{dotConfig.size}}" bindchanging="onDotSizeChange" activeColor="#eae3d9" backgroundColor="#27272a" />
+        </view>
+        <view class="slider-item">
+          <text class="slider-label">变化: {{dotConfig.variance}}%</text>
+          <slider min="0" max="100" value="{{dotConfig.variance}}" bindchanging="onDotVarianceChange" activeColor="#eae3d9" backgroundColor="#27272a" />
+        </view>
+      </view>
+    </view>
+
+    <!-- 针织素材控制 -->
+    <view wx:if="{{currentTool === 'knit'}}" class="panel-content">
+      <view class="panel-header">
+        <text class="panel-title">针织素材</text>
+        <button class="btn btn-secondary btn-sm" bindtap="uploadUserMaterial">上传</button>
+        <button wx:if="{{placedMaterials.length > 0}}" class="btn btn-secondary btn-sm" bindtap="clearMaterials">清除</button>
+      </view>
+
+      <text class="tip-text">点击素材添加到画布，拖拽移动位置；长按可删除自上传素材</text>
+
+      <scroll-view class="category-tabs" scroll-x>
+        <view
+          wx:for="{{categories}}"
+          wx:key="id"
+          class="tab {{currentCategory === item.id ? 'active' : ''}}"
+          bindtap="switchCategory"
+          data-category="{{item.id}}"
+        >
+          {{item.label}}
+        </view>
+      </scroll-view>
+
+      <scroll-view class="material-list" scroll-y>
+        <view class="material-grid">
+          <view
+            wx:for="{{currentMaterials}}"
+            wx:key="id"
+            class="material-item {{selectedMaterial === item.id ? 'selected' : ''}}"
+            bindtap="selectMaterial"
+            bindlongpress="{{item.isBuiltin ? '' : 'deleteUserMaterial'}}"
+            data-id="{{item.id}}"
+          >
+            <view class="material-preview {{item.isBuiltin ? 'builtin' : ''}}">
+              <text wx:if="{{item.isBuiltin}}" class="builtin-icon">
+                {{item.id === 'demo_circle' ? '⬤' : item.id === 'demo_square' ? '⬛' : '⭐'}}
+              </text>
+              <image wx:else src="{{item.path}}" mode="aspectFit" class="material-img" />
+            </view>
+            <text class="material-name">{{item.name}}</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <view wx:if="{{selectedPlacedMaterial}}" class="material-controls">
+        <view class="slider-item">
+          <text class="slider-label">大小</text>
+          <slider min="5" max="50" value="{{selectedPlacedMaterial.sizeRatio * 100}}" bindchanging="onMaterialSizeChange" activeColor="#eae3d9" backgroundColor="#27272a" />
+        </view>
+        <view class="slider-item">
+          <text class="slider-label">旋转: {{selectedPlacedMaterial.rotationDegrees}}°</text>
+          <slider min="0" max="360" value="{{selectedPlacedMaterial.rotationDegrees}}" bindchanging="onMaterialRotationChange" activeColor="#eae3d9" backgroundColor="#27272a" />
+        </view>
+        <button class="btn btn-danger" bindtap="deleteSelectedMaterial">删除素材</button>
+      </view>
+    </view>
+
+    <!-- 画笔控制 -->
+    <view wx:if="{{currentTool === 'brush'}}" class="panel-content">
+      <view class="panel-header">
+        <text class="panel-title">画笔设置</text>
+        <button class="btn btn-secondary" bindtap="undoBrush">撤销</button>
+        <button class="btn btn-secondary" bindtap="clearBrush">清除</button>
+      </view>
+
+      <view class="control-grid">
+        <view class="control-item">
+          <text class="control-label">类型</text>
+          <picker mode="selector" range="{{brushTypeLabels}}" value="{{brushConfig.typeIndex}}" bindchange="onBrushTypeChange">
+            <view class="picker-btn">{{brushTypeLabels[brushConfig.typeIndex]}}</view>
+          </picker>
+        </view>
+        <view class="control-item full-width">
+          <text class="slider-label">粗细: {{brushConfig.width}}</text>
+          <slider min="1" max="20" value="{{brushConfig.width}}" bindchanging="onBrushWidthChange" activeColor="#eae3d9" backgroundColor="#27272a" />
+        </view>
+      </view>
+
+      <view class="color-palette">
+        <text class="control-label">颜色</text>
+        <scroll-view class="palette-scroll" scroll-x>
+          <view
+            wx:for="{{palette}}"
+            wx:key="name"
+            class="palette-item {{brushConfig.colorIndex === index ? 'selected' : ''}}"
+            style="background: {{item.color}};"
+            bindtap="selectBrushColor"
+            data-index="{{index}}"
+          />
+        </scroll-view>
+      </view>
+    </view>
+
+    <!-- 背景控制 -->
+    <view wx:if="{{currentTool === 'background'}}" class="panel-content">
+      <view class="panel-header">
+        <text class="panel-title">背景设置</text>
+      </view>
+
+      <view class="control-grid">
+        <view class="control-item">
+          <text class="control-label">类型</text>
+          <picker mode="selector" range="{{backgroundLabels}}" value="{{backgroundConfig.typeIndex}}" bindchange="onBackgroundTypeChange">
+            <view class="picker-btn">{{backgroundLabels[backgroundConfig.typeIndex]}}</view>
+          </picker>
+        </view>
+      </view>
+
+      <view wx:if="{{backgroundConfig.typeIndex === 0}}" class="color-section">
+        <text class="control-label">背景颜色</text>
+        <view class="color-swatch large" style="background: {{backgroundConfig.color}};" bindtap="showBgColorPicker"></view>
+      </view>
+
+      <view wx:if="{{backgroundConfig.typeIndex === 1}}" class="stripe-controls">
+        <view class="color-row">
+          <view class="color-item">
+            <text class="control-label">颜色1</text>
+            <view class="color-swatch" style="background: {{backgroundConfig.stripeColor1}};" bindtap="showStripeColor1Picker"></view>
+          </view>
+          <view class="color-item">
+            <text class="control-label">颜色2</text>
+            <view class="color-swatch" style="background: {{backgroundConfig.stripeColor2}};" bindtap="showStripeColor2Picker"></view>
+          </view>
+        </view>
+        <view class="slider-item">
+          <text class="slider-label">条纹宽度: {{backgroundConfig.stripeWidth}}</text>
+          <slider min="5" max="50" value="{{backgroundConfig.stripeWidth}}" bindchanging="onStripeWidthChange" activeColor="#eae3d9" backgroundColor="#27272a" />
+        </view>
+      </view>
+
+      <view wx:if="{{backgroundConfig.typeIndex === 2}}" class="photo-section">
+        <button class="btn btn-secondary" bindtap="chooseBackgroundImage">选择背景图</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 颜色选择器弹窗 -->
+  <view wx:if="{{showColorPicker}}" class="color-picker-modal">
+    <view class="modal-mask" bindtap="hideColorPicker"></view>
+    <view class="modal-content">
+      <view class="modal-title">选择颜色</view>
+      <view class="preset-colors">
+        <view
+          wx:for="{{palette}}"
+          wx:key="name"
+          class="preset-color"
+          style="background: {{item.color}};"
+          bindtap="selectPresetColor"
+          data-color="{{item.color}}"
+        />
+      </view>
+      <view class="custom-color">
+        <input type="text" placeholder="#FFFFFF" bindinput="onCustomColorInput" value="{{customColor}}" class="input" />
+        <button class="btn btn-primary" bindtap="applyCustomColor">确定</button>
+      </view>
+      <button class="btn btn-secondary" bindtap="hideColorPicker">取消</button>
+    </view>
+  </view>
+</view>

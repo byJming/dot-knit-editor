@@ -1,0 +1,33 @@
+<view class="color-picker">
+  <view class="preview" style="background: {{color}};" bindtap="onTap" />
+
+  <view wx:if="{{showPicker}}" class="picker-modal">
+    <view class="picker-content">
+      <view class="picker-title">选择颜色</view>
+
+      <view class="color-display" style="background: {{hexColor}};">
+        <text class="color-text">{{hexColor}}</text>
+      </view>
+
+      <view class="slider-row">
+        <text class="slider-label">色相</text>
+        <slider min="0" max="360" value="{{hue}}" bindchanging="onHueChange" show-value activeColor="#ffffff" backgroundColor="#27272a" />
+      </view>
+
+      <view class="slider-row">
+        <text class="slider-label">饱和度</text>
+        <slider min="0" max="100" value="{{saturation}}" bindchanging="onSaturationChange" show-value activeColor="#ffffff" backgroundColor="#27272a" />
+      </view>
+
+      <view class="slider-row">
+        <text class="slider-label">亮度</text>
+        <slider min="0" max="100" value="{{brightness}}" bindchanging="onBrightnessChange" show-value activeColor="#ffffff" backgroundColor="#27272a" />
+      </view>
+
+      <view class="picker-actions">
+        <button class="btn-cancel" bindtap="onCancel">取消</button>
+        <button class="btn-confirm" bindtap="onConfirm">确定</button>
+      </view>
+    </view>
+  </view>
+</view>

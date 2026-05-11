@@ -1,0 +1,20 @@
+{
+  "pages": [
+    "pages/editor/editor"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#000000",
+    "navigationBarTitleText": "波点拼接照片生成器",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#000000",
+    "backgroundColorTop": "#000000",
+    "backgroundColorBottom": "#000000"
+  },
+  "permission": {
+    "scope.writePhotosAlbum": {
+      "desc": "用于保存编辑后的图片到你的相册"
+    }
+  },
+  "sitemapLocation": "sitemap.json"
+}
