@@ -24,14 +24,13 @@
 
 ## 界面预览
 
-### 波点拼接
-![波点拼接](波点.jpg)
-
-### 针织素材
-![针织素材](针织.jpg)
-
-### 画笔工具
-![画笔工具](画笔.jpg)
+<p align="center">
+  <img src="波点.jpg" width="250" alt="波点拼接" />
+  &nbsp;&nbsp;
+  <img src="针织.jpg" width="250" alt="针织素材" />
+  &nbsp;&nbsp;
+  <img src="画笔.jpg" width="250" alt="画笔工具" />
+</p>
 
 ## 项目结构
 
