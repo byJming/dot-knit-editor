@@ -1,14 +1,14 @@
 # 波点针织编辑器
 
 > **⚠️ 当前版本处于早期阶段，可能存在功能简陋、交互不完善、已知或未知 Bug 等问题。**
-> 如果你在使用过程中遇到任何问题或有改进建议，欢迎 [提交 Issue](../../issues) 反馈，感谢支持！
+> 如果你在使用过程中遇到任何问题或有改进建议，欢迎 [提交 Issue](https://github.com/byJming/dot-knit-editor/issues) 反馈，感谢支持！
 
 微信小程序——波点拼接与针织素材创意编辑工具。
 
 ## 微信扫码体验
 
 <p align="center">
-  <img src="../小程序码.jpg" width="200" alt="微信小程序码" />
+  <img src="小程序码.jpg" width="200" alt="微信小程序码" />
 </p>
 
 <p align="center">使用微信扫一扫，即可体验小程序</p>
@@ -25,13 +25,13 @@
 ## 界面预览
 
 ### 波点拼接
-![波点拼接](../波点.jpg)
+![波点拼接](波点.jpg)
 
 ### 针织素材
-![针织素材](../针织.jpg)
+![针织素材](针织.jpg)
 
 ### 画笔工具
-![画笔工具](../画笔.jpg)
+![画笔工具](画笔.jpg)
 
 ## 项目结构
 
@@ -93,6 +93,6 @@ miniprogram/
 
 ## 许可证
 
-本项目采用 [PolyForm Noncommercial License 1.0.0](LICENSE)，仅供学习交流和非商业使用。
+本项目采用 [PolyForm Noncommercial License 1.0.0](miniprogram/LICENSE)，仅供学习交流和非商业使用。
 
 Copyright (c) 2026 ming <woqiang0610@163.com>
