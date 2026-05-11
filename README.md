@@ -92,6 +92,6 @@ miniprogram/
 
 ## 许可证
 
-本项目采用 [PolyForm Noncommercial License 1.0.0](miniprogram/LICENSE)，仅供学习交流和非商业使用。
+本项目采用 [PolyForm Noncommercial License 1.0.0](LICENSE)，仅供学习交流和非商业使用。
 
 Copyright (c) 2026 ming <woqiang0610@163.com>
